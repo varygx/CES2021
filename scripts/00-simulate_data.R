@@ -2,7 +2,7 @@
 # Purpose: Simulates a dataset of predictor variables and the party
 # that the person votes for
 # Author: Allen Uy 
-# Date: 12 March 2023 
+# Date: 12 March 2024
 # Contact: allen.uy@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: None

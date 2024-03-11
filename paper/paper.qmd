@@ -2,9 +2,8 @@
 title: "My title"
 subtitle: "My subtitle if needed"
 author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: LINK."
+  - Allen Uy
+thanks: "Code and data are available at: https://github.com/varygx/CES2021."
 date: today
 date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
@@ -19,9 +18,13 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
-library(palmerpenguins)
-```
+library(arrow)
+library(here)
+library(knitr)
+library(kableExtra)
 
+ces21_data <- read_parquet(here::here("data/analysis_data/clean_ces2021.parquet"))
+```
 
 # Introduction
 
@@ -29,11 +32,59 @@ You can and should cross-reference sections and sub-sections. We use @citeR and 
 
 The remainder of this paper is structured as follows. @sec-data....
 
-
-
 # Data {#sec-data}
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+The data used in this paper was gathered from the 2021 Canadian Election Study (CES) hosted on the Harvard Dataverse (source) and analyzed using R (source) with help from LIST PACKAGES.
+
+## CES2021
+
+The dataset was gathered by CES through an online survey via the Leger Opinion platform where data was finalized on November 1, 2023. A total of 20968 responses were recorded with the following stratification goals:
+
+### Gender
+
+50% men, 50% women
+
+### Age
+
+28% aged 18-34, 33% aged 35-54, 39% aged 55 and higher
+
+### Region
+
+7% in the Atlantic, 23% in Quebec, 38% in Ontario, 32% in the West
+
+### Language
+
+80% French in Quebec, 20% English
+
+10% French within the Atlantic
+
+10% French nationally
+
+The survey was launched during the Campaign Period Survey (CPS) during August 17 to September 19, 2021 and a follow-up Post-Election Survey (PES) had 15069 responses during September 23 to October 4, 2021.
+
+The provided data was cleaned by CES to include mostly high-quality responses, the details of which can be found in Appendix A.
+
+The dataset includes 1059 variables, many of which could have been included in the analysis but excluded for brevity in favour of select variables that potentially have clear correlations with party support.
+
+These variables are gathered from the CPS portion of the survey with no open-ended answers and assigned numerical values or categorical values as numbers.
+
+### Personal Variables
+
+Age, Education, Employment, Religion, Immigration Status, and Income Category.
+
+```{r}
+head(ces21_data, 5) %>% 
+  select(age, education, employment, religion, born_in_canada, income_cat) %>% 
+  kable() %>% kable_styling()
+```
+
+### Topic Variables
+
+Economy, Healthcare, Immigration, Covid, Environment, Quebec, Government Spending, Education, Housing, Carbon Tax, Childcare
+
+### Party Variables
+
+Supported Party (Party they voted for, will vote for, likely to vote for, would vote for if possible)
 
 ```{r}
 #| label: fig-bills
@@ -70,9 +121,7 @@ analysis_data |>
        y = "Wing length (mm)")
 ```
 
-Talk way more about it. 
-
-
+Talk way more about it.
 
 # Model
 
@@ -82,8 +131,9 @@ Here we briefly describe the Bayesian analysis model used to investigate... Back
 
 ## Model set-up
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.
 
+```{=tex}
 \begin{align} 
 y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
 \mu_i &= \alpha + \beta_i + \gamma_i\\
@@ -92,16 +142,14 @@ y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
 \gamma &\sim \mbox{Normal}(0, 2.5) \\
 \sigma &\sim \mbox{Exponential}(1)
 \end{align}
-
+```
 We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
-
 
 ### Model justification
 
 We expect a positive relationship between the size of the wings and time spent aloft. In particular...
 
 We can use maths by including latex between dollar signs, for instance $\theta$.
-
 
 # Results
 
@@ -135,14 +183,11 @@ modelsummary::modelsummary(
 )
 ```
 
-
-
-
 # Discussion
 
 ## First discussion point {#sec-first-point}
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this.
 
 ## Second discussion point
 
@@ -156,8 +201,7 @@ Weaknesses and next steps should also be included.
 
 \appendix
 
-# Appendix {-}
-
+# Appendix {.unnumbered}
 
 # Additional data details
 
@@ -167,7 +211,7 @@ Weaknesses and next steps should also be included.
 
 In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows...
 
 ```{r}
 #| eval: true
@@ -211,11 +255,6 @@ plot(first_model, "trace")
 plot(first_model, "rhat")
 ```
 
-
-
 \newpage
 
-
 # References
-
-

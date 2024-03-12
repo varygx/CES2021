@@ -1,14 +1,14 @@
-# Starter folder
+# CES2021
 
 ## Overview
 
-This repo analyzes and models the 2021 Canadian Federal Election using data from the 2021 Canadian Election Study.
+This repo analyzes voter tendencies in the 2021 Canadian Federal Election using data from the 2021 Canadian Election Study.
 
 ## File Structure
 
 The repo is structured as:
 
--   `data/raw_data` contains the raw data as obtained from the 2021 Canadian Election STudy.
+-   `data/raw_data` contains the raw data as obtained from the 2021 Canadian Election Study.
 -   `data/analysis_data` contains the cleaned dataset that was constructed.
 -   `model` contains fitted models.
 -   `other` contains relevant literature, details about LLM chat interactions, and sketches.

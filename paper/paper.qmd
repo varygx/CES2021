@@ -31,11 +31,11 @@ The two largest political parties in Canada, the Liberal Party and Conservative 
 
 By exploring personal and topical variables, this paper aims to provide insight into the factors that influenced political support for the Liberal and Conservative parties in Canada. The goal is to provide a clearer understanding of the dynamics that shaped the 2021 election and offer insights into broader patterns of political affiliations in the Canadian context, which could be used for inference in the upcoming election.
 
-The subsequent sections follow a structured format. The Data section outlines the source and variables central to our analysis. The Model section details the construction and methodology of the statistical models used. The Results section presents the key findings of our analysis, while the Discussion section critically reviews the content, addresses the implications of the results, acknowledges model limitations, and suggests potential future research directions.
+The subsequent sections follow a structured format. @sec-data outlines the source and variables central to our analysis. @sec-model details the construction and methodology of the statistical models used. @sec-results presents the key findings of our analysis, while @sec-discussion critically reviews the content, addresses the implications of the results, acknowledges model limitations, and suggests potential research directions.
 
 # Data {#sec-data}
 
-The data used in this paper was gathered from the 2021 Canadian Election Study (CES) hosted on the Harvard Dataverse (@citeCES) and analyzed using R (@citeR) with help from `tidyverse` (@citeTidyverse), `haven` (@citeHaven), `arrow` (@citeArrow), `rstanarm` (@citeRstanarm), `modelsummary` (@citeModelsummary), `testthat` (@citeTestthat), `here` (@citeHere), `knitr` (@citeKnitr), and `kableExtra` (@citeKableExtra).
+The data used in this paper was gathered from the 2021 Canadian Election Study (CES) hosted on the Harvard Dataverse [@citeCES] and analyzed using R [@citeR] with help from `tidyverse` [@citeTidyverse], `haven` [@citeHaven], `arrow` [@citeArrow], `rstanarm` [@citeRstanarm], `modelsummary` [@citeModelsummary], `testthat` [@citeTestthat], `here` [@citeHere], `knitr` [@citeKnitr], and `kableExtra` [@citeKableExtra].
 
 ## CES2021
 
@@ -85,7 +85,7 @@ head(ces21_data, 5) %>%
   kable() %>% kable_styling()
 ```
 
-# Model
+# Model {#sec-model}
 
 We investigate model that might explain political support. A logistic regression model using age, education, and income.
 
@@ -93,6 +93,7 @@ We investigate model that might explain political support. A logistic regression
 
 Define $y_i$ as the political preference of the respondent and equal to 1 if Liberal and 0 if Conservative. Then age, education, and income are the respective answers of the respondent.
 
+```{=tex}
 \begin{align*}
 y_i|\pi_i &\sim \mbox{Bern}(\pi_i) \\ 
 \text{logit}(\pi_i) &= \beta_0 + \beta_1 \times \text{age}_i + \beta_2 \times \text{education}_i + \beta_3 \times \text{income}_i \\ 
@@ -101,10 +102,10 @@ y_i|\pi_i &\sim \mbox{Bern}(\pi_i) \\
 \beta_2 &\sim \text{Normal}(0, 2.5) \\ 
 \beta_3 &\sim \text{Normal}(0, 2.5) \\ 
 \end{align*}
-
+```
 We assume Normal priors.
 
-# Results
+# Results {#sec-results}
 
 ```{r}
 #| echo: false
@@ -146,11 +147,11 @@ tab %>% kable_styling(latex_options = "scale_down")
 
 Based on @tbl-personal_modelresults we observe that age has little effect on party support. It also suggests those with higher education are likely to vote Liberal while those with higher income are more likely to vote Conservative.
 
-# Discussion
+# Discussion {#sec-discussion}
 
 ## Lack of Topical Model {#sec-first-point}
 
-The paper omits a model based on topic variables due to compute feasibility. Due how the data was stored, each variable is a number that was converted to a factor using `as_factor` from `haven` (@citeHaven). These variables would often have 3 to 5 levels for each factor or more. This lead to large models for the topic model and even the personal model. This was simply not feasible, however the data processing prior to the decision to omit the topic model and simplify the personal model was kept in the paper.
+The paper omits a model based on topic variables due to compute feasibility. Due how the data was stored, each variable is a number that was converted to a factor using `as_factor` from `haven` [@citeHaven]. These variables would often have 3 to 5 levels for each factor or more. This lead to large models for the topic model and even the personal model. This was simply not feasible, however the data processing prior to the decision to omit the topic model and simplify the personal model was kept in the paper.
 
 ## Model Limitations
 

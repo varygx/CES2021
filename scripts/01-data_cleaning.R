@@ -95,25 +95,11 @@ selected_data <- selected_data %>%
   ) %>%
   select(-votechoice, -votechoice_pr, -vote_unlikely, -vote_unlike_pr, -v_advance, -vote_lean, -vote_lean_pr)
 
-# Convert income number to income category
-selected_data <- selected_data %>%
-  mutate(
-    income_cat = ifelse(
-      income_num != -99 & is.na(income_cat),
-      case_when(
-        income_num == 0 ~ 1,
-        income_num <= 30000 ~ 2,
-        income_num <= 60000 ~ 3,
-        income_num <= 90000 ~ 4,
-        income_num <= 110000 ~ 5,
-        income_num <= 150000 ~ 6,
-        income_num <= 200000 ~ 7,
-        TRUE ~ 8
-      ),
-      income_cat
-    )
-  )
+unique(selected_data$income_cat)
 
+
+
+# Convert income number to income category
 
 # Filter to only Liberal (1) and Conservative (2)
 selected_data <- selected_data %>% 
@@ -123,6 +109,23 @@ selected_data <- selected_data %>%
   mutate(voted_for = if_else(aggregated_vote == 1, "Liberal", "Conservative"),
          voted_for = as_factor(voted_for)) %>% 
   select(-aggregated_vote)
+
+# Convert columns to factors
+selected_data <- as_factor(selected_data)
+
+selected_data <- selected_data %>%
+  mutate(income_cat = case_when(
+    income_num == -99 ~ "Don't know/ Prefer not to answer",
+    income_num == 0 ~ "No income",
+    income_num <= 30000 ~ "$1 to $30,000",
+    income_num <= 60000 ~ "$30,001 to $60,000",
+    income_num <= 90000 ~ "$60,001 to $90,000",
+    income_num <= 110000 ~ "$90,001 to $110,000",
+    income_num <= 150000 ~ "$110,001 to $150,000",
+    income_num <= 200000 ~ "$150,001 to $200,000",
+    income_num > 200000 ~ "More than $200,000",
+    TRUE ~ "Don't know/ Prefer not to answer"
+  ))
 
 #### Save data ####
 write_parquet(x = selected_data, sink = "data/analysis_data/clean_ces2021.parquet")

@@ -1,10 +1,10 @@
 ---
 title: "Age, Education, Income, and the Canadian Vote. Understanding the 2021 election."
 author: Allen Uy
-thanks: "Code and data are available at: https://github.com/varygx/CES2021."
+thanks: "Code and data are available at: [https://github.com/varygx/CES2021](https://github.com/varygx/CES2021)"
 date: today
 date-format: long
-abstract: "This study examines the factors shaping support for Canada's major parties, the Liberal and Conservative, during the 2021 federal election. Analyzing personal and topical variables, we discovered that age has minimal impact, higher education correlates with increased Liberal support, and higher income is linked to Conservative favor. These insights offer a comprehensive understanding of the 2021 election dynamics, enabling more informed predictions for the upcoming 2025 election. This research contributes to a better grasp of Canadian political affiliations, assisting citizens and policymakers in adapting to evolving electoral trends."
+abstract: "This study examines the factors shaping support for Canada's major parties, the Liberal and Conservative, during the 2021 federal election. Analyzing personal and topical variables, we discovered that age has minimal impact, higher education is linked to Liberal support, and higher income is linked to Conservative support. These insights offer an understanding of the 2021 election dynamics, enabling more informed predictions for the upcoming 2025 election. This research contributes to a better grasp of Canadian political affiliations, assisting citizens and policymakers in adapting to evolving electoral trends."
 format: pdf
 toc: true
 number-sections: true
@@ -31,7 +31,9 @@ The two largest political parties in Canada, the Liberal Party and Conservative 
 
 By exploring personal and topical variables, this paper aims to provide insight into the factors that influenced political support for the Liberal and Conservative parties in Canada. The goal is to provide a clearer understanding of the dynamics that shaped the 2021 election and offer insights into broader patterns of political affiliations in the Canadian context, which could be used for inference in the upcoming election.
 
-The subsequent sections follow a structured format. @sec-data outlines the source and variables central to our analysis. @sec-model details the construction and methodology of the statistical models used. @sec-results presents the key findings of our analysis, while @sec-discussion critically reviews the content, addresses the implications of the results, acknowledges model limitations, and suggests potential research directions.
+Our findings show that age has little to no effect on party support and those with higher education are likely to vote Liberal while those with higher income are more likely to vote Conservative.
+
+The subsequent sections follow a structured format. @sec-data outlines the source and variables of interest for our analysis. @sec-model details the construction and methodology of the statistical models used. @sec-results presents the key findings of our analysis, while @sec-discussion critically reviews the content, addresses the implications of the results, acknowledges model limitations, and suggests potential research directions.
 
 # Data {#sec-data}
 
@@ -51,47 +53,140 @@ These variables are gathered from the CPS portion of the survey with no open-end
 
 ### Personal Variables
 
-Age was calculated in years based on the year of birth the respondent inputted. Education, Employment, Religion, Immigration Status, and Province were given a number with a corresponding label based on which radio button the respondent selected. Income category was given a number corresponding to a range of household incomes. Respondents were asked to input their income or if they felt uncomfortable to only specify the range. Exact income numbers were converted to their appropriate range. A preview of personal variables can be seen in @tbl-personal_var.
+Age was calculated in years based on the respondent's year of birth. Education, Employment, Religion, Immigration Status, and Province were given a number with a corresponding label based on which radio button the respondent selected. Income category was given a number corresponding to a range of household incomes. Respondents were asked to input their income or if they felt uncomfortable to only specify the range. Exact income numbers were converted to their appropriate range. A preview of personal variables can be seen in @tbl-personal_var.
 
 ```{r, echo=FALSE}
 #| label: tbl-personal_var
 #| tbl-cap: Sample of Personal Variable Data
 head(ces21_data, 5) %>% 
   select(age, education, income_cat) %>% 
-  kable() %>% kable_styling(latex_options = "scale_down")
+  kable(
+    booktabs = TRUE,
+    linesep = ""
+  ) %>% kable_styling(latex_options = "scale_down")
 ```
+
+```{r, echo=FALSE}
+#| label: fig-age_summary
+#| fig-cap: Distribution of respondent age
+ces21_data %>% ggplot(aes(x=age)) +
+  geom_bar() +
+  theme_minimal()
+```
+
+```{r, echo=FALSE}
+#| label: fig-education_summary
+#| fig-cap: Distribution of respondent education level
+ces21_data %>% mutate(education = recode(education,
+                                        "Some elementary school" = "Some elementary",
+                                        "Completed elementary school" = "Completed elementary",
+                                        "Some secondary/ high school" = "Some secondary",
+                                        "Completed secondary/ high schoo" = "Completed secondary", 
+                                        "Some technical, community college, CEGEP, College Classique" = "Some college",
+                                        "Completed technical, community college, CEGEP, College Classique" = "Completed college")) %>% ggplot(aes(x=education)) +
+  geom_bar() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r, echo=FALSE}
+#| label: fig-income_summary
+#| fig-cap: Distribution of respondent income level
+
+ces21_data %>% ggplot(aes(x=income_cat)) +
+  geom_bar() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  scale_x_discrete(limit = c("No income", "$1 to $30,000", "$30,001 to $60,000",
+                       "$60,001 to $90,000", "$90,001 to $110,000", "$110,001 to $150,000",
+                       "$150,001 to $200,000", "More than $200,000", "Don't know/ Prefer not to answer"))
+```
+
+The age distribution seen in @fig-age_summary matches voter turnout by age group in previous elections [@citeAgeTurnout]. @fig-education_summary shows the majority of respondents have completed college or university. The majority of respondents are close to the median total income for individuals and families in 2021 [@citeMedianIncome].
 
 ### Topic Variables
 
-The following survey topics were extracted from the dataset: Economy, Healthcare, Immigration, COVID, Environment, Quebec Sovereignty, Government Spending, Education, Housing, Carbon Tax, and Childcare. Variables ending in `_party` indicate the party which the respondent believes would handle the best. The survey was designed to give only half the surveyees this question. Other variables are from questions with responses such as: "(strongly) disagree, neutral, (strongly) agree" where the respondent selected one of those answers or did not answer. A preview of topic variables can be seen in @tbl-topic_var.
+The following survey topics were extracted from the dataset: Economy, Healthcare, Immigration, COVID, Environment, Quebec Sovereignty, Government Spending, Education, Housing, Carbon Tax, and Childcare. Variables ending in `_party` indicate the party which the respondent believes would handle the best. The survey was designed to give only half the respondents this question. Other variables are from questions with responses on a scale such as: "(strongly) disagree, neutral, (strongly) agree" or "spend less, spend the same, spend more" where the respondent selected one of those answers or did not answer. A preview of topic variables can be seen in @tbl-topic_var.
 
 ```{r, echo=FALSE}
 #| label: tbl-topic_var
 #| tbl-cap: Sample of Topic Variable Data
 head(ces21_data, 5) %>% 
-  select(econ_party, healthcare_party, imm_party, covid_party) %>% 
-  kable() %>% kable_styling(latex_options = "scale_down")
+  select(econ_party, educ_party, spend_educ) %>% 
+  kable(
+    booktabs = TRUE,
+    linesep = ""
+  ) %>% kable_styling(latex_options = "scale_down")
 ```
+
+```{r, echo=FALSE}
+#| label: fig-econ_party_summary
+#| fig-cap: Responses to "Which party would do the best job at handling economy?"
+
+ces21_data %>% ggplot(aes(x=econ_party)) +
+  geom_bar() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r, echo=FALSE}
+#| label: fig-educ_party_summary
+#| fig-cap: Responses to "Which party would do the best job at handling education?"
+
+ces21_data %>% ggplot(aes(x=educ_party)) +
+  geom_bar() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r, echo=FALSE}
+#| label: fig-educ_spend_summary
+#| fig-cap: Responses to "How much should the federal government spend on education?"
+
+ces21_data %>% ggplot(aes(x=spend_educ)) +
+  geom_bar() +
+  theme_minimal()
+```
+
+@fig-econ_party_summary shows that more respondents believe the Conservative party would handle economy the best out of all parties while @fig-educ_party_summary shows that more respondents believe the Liberal party would handle education the best. Both graphs show a large amount of N/A answers due to only 50% of respondents receiving this question due to survey design. Regardless of opinion on which party is best suited for education, @fig-educ_spend_summary makes it clear that Canadians want the government to focus more resources on education.
 
 ### Party Variables
 
-Depending on the surveyee's circumstances, the survey asked which party they voted for in advance, will vote for, are likely to vote for, or would vote for if possible. Only one of these questions was ever asked so we aggregated those columns into a single `voted_for` variable, filtered to the Liberal and Conservative parties. A preview of the `voted_for` variable can be seen in @tbl-personal_var.
+Depending on how the respondent answered certain questions, the survey asked which party they voted for in advance, will vote for, are likely to vote for, or would vote for if possible. Only one of these questions was ever asked so we aggregated those columns into a single `voted_for` variable, filtered to the Liberal and Conservative parties. A preview of the `voted_for` variable can be seen in @tbl-personal_var.
 
 ```{r, echo=FALSE}
 #| label: tbl-party_var
 #| tbl-cap: Sample of the Party the Respondent Supports
 head(ces21_data, 5) %>% 
   select(voted_for) %>% 
-  kable() %>% kable_styling()
+  kable(
+    booktabs = TRUE,
+    linesep = ""
+  ) %>% kable_styling()
 ```
+
+```{r, echo=FALSE}
+#| label: fig-party_summary
+#| fig-cap: Distribution of party support
+
+ces21_data %>% ggplot(aes(x=voted_for)) +
+  geom_bar() +
+  theme_minimal() +
+  geom_text(aes(label = after_stat(count)),
+            stat = "count",
+            position = position_stack(vjust = 0.5),
+            colour = "white")
+```
+
+@fig-party_summary shows the Liberal party having more support in this dataset. While the Liberal party won the most seats [@citeSeats] it is worth noting that the Conservative party won the popular vote [@citePopularVote].
 
 # Model {#sec-model}
 
-We investigate model that might explain political support. A logistic regression model using age, education, and income.
+We investigate one model that might explain political support. A logistic regression model using age, education, and income. Logistic regression is well-suited for this problem due to limiting political support to a binary outcome variable. We can estimate the probability of political support based on our predictor variables of age, education, and income.
 
 ## Model set-up
 
-Define $y_i$ as the political preference of the respondent and equal to 1 if Liberal and 0 if Conservative. Then age, education, and income are the respective answers of the respondent.
+Define $y_i$ as the political preference of the respondent and equal to 1 if Liberal and 0 if Conservative. Then $age_i$, $education_i$, $income_i$ are the respective answers of the respondent.
 
 ```{=tex}
 \begin{align*}
@@ -103,7 +198,7 @@ y_i|\pi_i &\sim \mbox{Bern}(\pi_i) \\
 \beta_3 &\sim \text{Normal}(0, 2.5) \\ 
 \end{align*}
 ```
-We assume Normal priors.
+In this logistic regression model, we use Normal priors with mean 0 and standard deviation 2.5 for the regression coefficients $\beta_0$, $\beta_1$, $\beta_2$, and $\beta_3$ which are the default priors for `rstanarm`.
 
 # Results {#sec-results}
 
@@ -129,13 +224,12 @@ personal_model <-
 #| tbl-cap: "Explanatory model of party support based on age, education, and income"
 #| warning: false
 #| fig-height: 5
-#| scale: 
 
 library("modelsummary")
 
 tab <- modelsummary::modelsummary(
   list(
-    "Personal model" = personal_model
+    "Support Liberal" = personal_model
   ),
   statistic = "mad",
   fmt = 2,
@@ -145,17 +239,31 @@ tab <- modelsummary::modelsummary(
 tab %>% kable_styling(latex_options = "scale_down")
 ```
 
-Based on @tbl-personal_modelresults we observe that age has little effect on party support. It also suggests those with higher education are likely to vote Liberal while those with higher income are more likely to vote Conservative.
+Based on @tbl-personal_modelresults we observe that age has a coefficient of -0.01, indicating age has little effect on party support. Bachelor's degree, Master's degree and Professional degree or doctorate have coefficients of 2.95, 3.26, and 3.06. When compared to lower levels of educations such as completed elementary school, some secondary school, and completed secondary school with coefficients of 2.05, 2.15, and 2.40 it suggests those with higher education are more likely to vote Liberal.
+
+No income, and the income ranges \$30,001 to \$60,000 and \$60,001 to \$90,000 have coefficients -0.61, -0.19, and -0.33. When compared to the higher income ranges \$90,001 to \$110,000, \$110,001, to \$150,000, \$150,001 to \$200,000, and more than \$200,000, which have coefficients -0.54, -0.45, -0.65, and -0.65, it suggests those with higher income are more likely to vote Conservative. Refer to [Appendix -@sec-credibility-intervals] for the credibility intervals of the predictors.
 
 # Discussion {#sec-discussion}
 
+## Conclusion
+
+By analyzing the 2021 CES dataset, we find that age makes no difference for party support, and those with higher education are likely to vote Liberal, while those with higher income are more likely to vote Conservative. We claim that support for the primary parties of Canada is based more on a divide between policy rather than demographics, at least in regards to age, education, and income. This is in contrast to the United States where there are significant differences in political support based on demographics [@citeDemographics].
+
 ## Lack of Topical Model {#sec-first-point}
 
-The paper omits a model based on topic variables due to compute feasibility. Due how the data was stored, each variable is a number that was converted to a factor using `as_factor` from `haven` [@citeHaven]. These variables would often have 3 to 5 levels for each factor or more. This lead to large models for the topic model and even the personal model. This was simply not feasible, however the data processing prior to the decision to omit the topic model and simplify the personal model was kept in the paper.
+The paper omits a model based on topic variables due to run-time. Due how the data was stored, each variable is a number that was converted to a factor using `as_factor` from `haven` [@citeHaven]. These variables would often have 3 to 5 levels for each factor or more. This lead to large models for the topic model and even the personal model. This was simply not feasible, however the data processing prior to the decision to omit the topic model and simplify the personal model was kept in the paper.
 
 ## Model Limitations
 
+Our model has an R2 of 0.031, meaning approximately 3.1% of variance in the outcome variable is explained by our chosen predictor variables. This value is relatively low even in the context of social science, indicating that we might need to look at other factors to fully explain political support. Despite this our model still finds a relationship similar to @fig-educ_party_summary and @fig-econ_party_summary where people concerned with the economy are likely to vote Conservative and those concerned with education are likely to vote Liberal.
+
+Logistic regression assumes a linear relationship between our predictor variables and the log-odds of our outcome variable. This assumption may not hold up, especially when our variables are correlated. For example, there is a correlation between age and education in the sense that there are average ages for finishing levels of education.
+
 ## Next Steps
+
+A model using topic variables or a combination of personal variables and topic variables could produce a better R2 than what we obtained. Such a model would be useful for prediction in the upcoming election. Geographical data is also a key part of analyzing voter tendencies, as parties have dominated cities or provinces historically.
+
+Translate the findings into practical recommendations for political campaigns and policymakers. Identify key policy areas and messages that resonate with different demographic groups and regions. Use the models to inform strategic decision-making, resource allocation, and targeted campaigning to maximize electoral success.
 
 \newpage
 
@@ -163,15 +271,17 @@ The paper omits a model based on topic variables due to compute feasibility. Due
 
 # Appendix {.unnumbered}
 
-# Stratification Goals {#sec-stratification-goals}
+# Additional Data Details {#sec-stratification-goals}
 
-## Gender
+## Stratification Goals
+
+### Gender
 
 -   50% men
 
 -   50% women
 
-## Age
+### Age
 
 -   28% aged 18-34
 
@@ -179,7 +289,7 @@ The paper omits a model based on topic variables due to compute feasibility. Due
 
 -   39% aged 55 and higher
 
-## Region
+### Region
 
 -   7% in the Atlantic
 
@@ -189,7 +299,7 @@ The paper omits a model based on topic variables due to compute feasibility. Due
 
 -   32% in the West
 
-## Language
+### Language
 
 -   80% French in Quebec, 20% English
 
@@ -197,7 +307,7 @@ The paper omits a model based on topic variables due to compute feasibility. Due
 
 -   10% French nationally
 
-# Response Quality {#sec-response-quality}
+## Response Quality {#sec-response-quality}
 
 As per @citeCES, responses were kept according to the following on page 6 of the codebook:
 
@@ -242,6 +352,36 @@ The following values are in the final dataset
 18. PES speeders (respondents that took between 6 and 7.12 minutes to complete the PES)
 
 19. Clean complete
+
+# Model Details
+
+## Posterior Predictive Check
+
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-ppcheck
+#| fig-cap: "Examining how the model fits the data with a posterior prediction check"
+
+pp_check(personal_model) +
+  theme_classic() +
+  theme(legend.position = "bottom")
+```
+
+In @fig-ppcheck we implement a posterior predictive check. The results suggest that the data is consistent with the model predictions. The model adequately captures the observed patterns and variability in the data.
+
+## Predictor Credibility Intervals {#sec-credibility-intervals}
+
+```{r, echo=FALSE, fig.width=10}
+#| label: fig-cred_level
+#| fig-cap: Credible intervals for predictors of party support
+modelplot(personal_model, conf_level = 0.9) +
+  labs(x = "90 per cent credibility interval")
+```
+
+@fig-cred_level shows small credibility intervals for income categories and age; and larger credibility intervals for education. The coefficients for income remain negative and the coefficients for education remain positive in 90% credibility intervals. This indicates the direction of their remains the same even if the strength changes.
 
 \newpage
 

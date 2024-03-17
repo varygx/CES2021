@@ -1,11 +1,11 @@
 #### Preamble ####
 # Purpose: Cleans the raw dataset provided by CES and saves to parquet
 # Author: Allen Uy
-# Date: 12 March 2024
+# Date: 16 March 2024
 # Contact: allen.uy@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: The dataset dta file is downloaded and placed in the
-# appropriate location. Libraries below are installed.
+# Pre-requisites: The dataset .dta file is downloaded and placed in the
+# appropriate location. Refer to the README for detailed instruction.
 
 #### Workspace setup ####
 library(tidyverse)
@@ -125,7 +125,13 @@ selected_data <- selected_data %>%
     income_num <= 200000 ~ "$150,001 to $200,000",
     income_num > 200000 ~ "More than $200,000",
     TRUE ~ "Don't know/ Prefer not to answer"
-  ))
+  )) %>% mutate(
+    income_cat = factor(income_cat, 
+                        levels = c("No income", "$1 to $30,000", "$30,001 to $60,000",
+                                   "$60,001 to $90,000", "$90,001 to $110,000", "$110,001 to $150,000",
+                                   "$150,001 to $200,000", "More than $200,000", "Don't know/ Prefer not to answer"))
+  )
+
 
 #### Save data ####
 write_parquet(x = selected_data, sink = "data/analysis_data/clean_ces2021.parquet")

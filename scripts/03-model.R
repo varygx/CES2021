@@ -1,11 +1,10 @@
 #### Preamble ####
 # Purpose: Models party support for Canada 2021 Election
 # Author: Allen Uy
-# Date: 12 March 2024 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Date: 16 March 2024
+# Contact: allen.uy@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: 01-data_cleaning was run
 
 
 #### Workspace setup ####
@@ -14,7 +13,7 @@ library(rstanarm)
 library(arrow)
 
 #### Read data ####
-analysis_data <- read_parquet("data/analysis_data/clean_ces2021.parquet")
+ces21_data <- read_parquet("data/analysis_data/clean_ces2021.parquet")
 
 ### Model data ####
 # Model based on personal variables

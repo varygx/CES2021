@@ -1,7 +1,7 @@
 #### Preamble ####
 # Purpose: Tests cleaned data to ensure robustness
 # Author: Allen Uy
-# Date: 12 March 2024
+# Date: 16 March 2024
 # Contact: allen.uy@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: 01-data_cleaning was run
@@ -11,14 +11,15 @@
 library(tidyverse)
 library(testthat)
 library(arrow)
+library(here)
 
-ces21_data <- read_parquet("data/analysis_data/clean_ces2021.parquet")
+ces21_data <- read_parquet(here::here("data/analysis_data/clean_ces2021.parquet"))
 
 #### Test data ####
-test_that("variables are labels", {
-  expect_type(ces21_data$age, "string") 
-  expect_type(ces21_data$education, "string")
-  expect_type(ces21_data$income_cat, "string")
+test_that("variables are expected type from dta", {
+  expect_type(ces21_data$age, "double") 
+  expect_type(ces21_data$education, "integer")
+  expect_type(ces21_data$income_cat, "character")
 })
 
 test_that("variables are greater than 0", {
@@ -35,6 +36,6 @@ test_that("variables do not have null values", {
 })
 
 test_that("party variable is binary", {
-  expect_type(ces21_data$voted_for, "string")
+  expect_type(ces21_data$voted_for, "integer")
   expect(all(ces21_data$voted_for %in% c("Liberal", "Conservative")))
 })

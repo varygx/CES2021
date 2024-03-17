@@ -247,11 +247,17 @@ No income, and the income ranges \$30,001 to \$60,000 and \$60,001 to \$90,000 h
 
 ## Conclusion
 
-By analyzing the 2021 CES dataset, we find that age makes no difference for party support, and those with higher education are likely to vote Liberal, while those with higher income are more likely to vote Conservative. We claim that support for the primary parties of Canada is based more on a divide between policy rather than demographics, at least in regards to age, education, and income. This is in contrast to the United States where there are significant differences in political support based on demographics [@citeDemographics].
+Through analysis of the 2021 CES dataset by selecting questions asked during the Campaign Period Survey pertaining to personal and topical variables, we were able to create a logistic regression model to predict support for the Liberal and Conservative parties of Canada. Our model indicates that age has no significant impact on party support, while individuals with higher education are more likely to support the Liberal party, and those with higher income are more likely to support the Conservative party. This is consistent with the historical philosophies of each party. Respondents with wealth are likely to vote according to policies that allow them to keep their wealth.
+
+We claim that support for the primary parties of Canada is based more on a divide between policy rather than demographics, at least in regards to age, education, and income. This is in contrast to the United States where there are significant differences in political support based on demographics [@citeDemographics].
+
+While age seems to have little effect on party support, it does have a large on voter turnout. The percentage of youth voting is significantly behind older generations [@citeAgeTurnout]. The reason for this is youth feeling distanced from politics by age, not feeling represented, connected and a lack of information [@citeYouthVoting].
 
 ## Lack of Topical Model {#sec-first-point}
 
-The paper omits a model based on topic variables due to run-time. Due how the data was stored, each variable is a number that was converted to a factor using `as_factor` from `haven` [@citeHaven]. These variables would often have 3 to 5 levels for each factor or more. This lead to large models for the topic model and even the personal model. This was simply not feasible, however the data processing prior to the decision to omit the topic model and simplify the personal model was kept in the paper.
+The paper omits a model based on topic variables due to run-time. Due to how the data was stored, each variable is a number that was converted to a factor using `as_factor` from `haven` [@citeHaven]. These variables would often have 3 to 5 levels for each factor or more. This lead to large models for the topic model and even the personal model. This was simply not feasible, however the data processing prior to the decision to omit the topic model and simplify the personal model was kept in the paper.
+
+`rstanarm` also had issues handling null values. Null values are inevitable due to the survey format so future work would require more data cleaning or imputation of those values.
 
 ## Model Limitations
 
@@ -264,6 +270,8 @@ Logistic regression assumes a linear relationship between our predictor variable
 A model using topic variables or a combination of personal variables and topic variables could produce a better R2 than what we obtained. Such a model would be useful for prediction in the upcoming election. Geographical data is also a key part of analyzing voter tendencies, as parties have dominated cities or provinces historically.
 
 Translate the findings into practical recommendations for political campaigns and policymakers. Identify key policy areas and messages that resonate with different demographic groups and regions. Use the models to inform strategic decision-making, resource allocation, and targeted campaigning to maximize electoral success.
+
+Find ways to increase youth voter turnout. Youth do not know enough about the country's political system or the parties. The same trend can be found in the United States [@citeUSYouth] while European countries are having more success with youth turnout [@citeEuropeYouth]. It is important not just for the benefit of the parties individually, but for the collective whole to get youth involved. Since those policies will shape the world they live in for much longer than older generations.
 
 \newpage
 
